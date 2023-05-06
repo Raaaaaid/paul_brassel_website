@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block scripts %}
+    {{ super() }}
+    <script>
+        // Download the image instantly so that it does not get downloaded when hovering over it.
+        new Image().src = "{{ url_for('static', filename='ultimate_beer_pong_soldier.png') }}";
+
+        // Change the image and set/remove a link when the transition ends/starts.
+        $("#beer-pong-soldier").on("transitionend", function() {
+            if ($(this).css("transform") !== "none") {
+                $(this).attr("src", "{{ url_for('static', filename='ultimate_beer_pong_soldier.png') }}");
+                $("#beer-pong-link").attr("href", "https://www.chemie-leipzig.de");
+            }
+        });
+        $("#beer-pong-soldier").on("transitionstart", function() {
+            if ($(this).css("transform") !== "none") {
+                $(this).attr("src", "{{ url_for('static', filename='beer_pong_soldier2.png') }}");
+                $("#beer-pong-link").removeAttr("href");
+            }
+        });
+
+        // Start the transition for touch devices.
+        $(document).on("touchstart", function(event) {
+            if ($("#beer-pong-soldier").get(0).contains(event.target)) {
+                $("#beer-pong-soldier").addClass("touch-device");
+            } else {
+                $("#beer-pong-soldier").removeClass("touch-device");
+            }
+        });
+    </script>
+{% endblock %}
+
+{% block page_content %}
+    <div class="beer-pong-outer">
+        <a id="beer-pong-link" target="_blank">
+            <img id="beer-pong-soldier" src="{{ url_for('static', filename='beer_pong_soldier2.png') }}">
+        </a>
+        <div class="beer-pong-inner content-box">
+            {% block div_content %}
+            {% endblock %}
+        </div>
+    </div>
+{% endblock %}

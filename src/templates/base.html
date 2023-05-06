@@ -1,0 +1,139 @@
+{% extends "bootstrap/base.html" %}
+
+{% block html_attribs %}
+    lang="de"
+{% endblock %}
+
+{% block head %}
+    {{ super() }}
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon-16x16.png') }}" sizes="32x32">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon-32x32.png') }}" sizes="16x16">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+{% endblock %}
+
+{% block styles %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{ url_for('static', filename='custom.css') }}">
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script src="https://kit.fontawesome.com/475e6c7646.js" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="https://momentjs.com/downloads/moment-with-locales.min.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/default-passive-events"></script>
+    <script>
+        // Download images instantly so that they do not get downloaded when hovering over them.
+        new Image().src = "{{ url_for('static', filename='logo_hover.png') }}";
+        new Image().src = "{{ url_for('static', filename='page_up_hover.png') }}";
+        new Image().src = "{{ url_for('static', filename='menu_hover.png') }}";
+
+        // Generic handling of touch events.
+        $(".touch-handle").on("touchstart", function() {
+            $(this).addClass("touch-device");
+        })
+        .on("touchend", function() {
+            $(this).removeClass("touch-device");
+        });
+
+        // Handle the dropdown menu from the navigation bar for touch devices.
+        $(document).on("touchstart", function(event) {
+            if ($("#menu-img").get(0).contains(event.target)) {
+                $("#navbar-dropdown").css("display", "block");
+                $("#menu-img").css("content", "url({{ url_for('static', filename='menu_hover.png') }})");
+            } else if (!$("#navbar-dropdown-content").get(0).contains(event.target)) {
+                $("#navbar-dropdown").css("display", "none");
+                $("#menu-img").css("content", "url({{ url_for('static', filename='menu.png') }})");
+            }
+        });
+
+        // Display/hide page-up if the site has/has not a scrollbar.
+        function show_page_up_button() {
+            if ($("html").prop("scrollHeight") > $("html").prop("clientHeight")) {
+                $("#page-up").css("display", "block");
+            } else {
+                $("#page-up").css("display", "none");
+            }
+        }
+        $(window).load(show_page_up_button);
+        $(window).resize(show_page_up_button);
+
+        // Play the animation on click event and remove it after the animation is finished.
+        $("#page-up").on("click", function() {
+            $(this).addClass("animation");
+            setTimeout(function() {
+                $("#page-up").removeClass("animation");
+            }, 250);
+        });
+    </script>
+{% endblock %}
+
+{% block title %}
+    Paul {% block subtitle %}{% endblock %}
+{% endblock %}
+
+{% block body %}
+    <div class="wrapper">
+        {{ super() }}
+    </div>
+{% endblock %}
+
+{% block navbar %}
+    <div class="navbar navbar-custom" role="navigation">
+        <div class="navbar-header">
+            <a href="/">
+                <img id="logo" class="touch-handle">
+            </a>
+        </div>
+        <div class="navbar-item touch-handle">
+            <a href="/">
+                H<span class="hover-red">O</span>ME
+            </a>
+        </div>
+        <div class="navbar-item touch-handle">
+            <a href="/404">
+                4<span class="hover-red">0</span>4
+            </a>
+        </div>
+        <div id="small-device-menu">
+            <img id="menu-img">
+            <div id="navbar-dropdown">
+                <div class="navbar-dropdown-spacer"></div>
+                <div id="navbar-dropdown-content">
+                    <a href="/">
+                        <div class="navbar-dropdown-item touch-handle">
+                            H<span class="hover-red">O</span>ME
+                        </div>
+                    </a>
+                    <a href="/404">
+                        <div class="navbar-dropdown-item touch-handle">
+                            4<span class="hover-red">0</span>4
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    {% block page_content %}
+    {% endblock %}
+    <div class="spacer"></div>
+    <div class="footer">
+        <div class="content">
+            <div>
+                <a href="https://github.com/Raaaaaid/paul_brassel_website" target="_blank">
+                    <span class="touch-handle">S<span class="hover-red">o</span>urce C<span class="hover-red">o</span>de</span>
+                </a>
+                der Website
+            </div>
+            <div style="height: 4px;"></div>
+            <div>
+                <a href="mailto:mail@paulbrassel.de" target="_blank">
+                    <span class="touch-handle">mail<span class="hover-red">@</span>paulbrassel.de</span>
+                </a>
+            </div>
+        </div>
+        <img id="page-up" class="touch-handle" onclick="$('html').animate({scrollTop: 0}, 'fast');">
+    </div>
+{% endblock %}

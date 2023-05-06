@@ -1,0 +1,66 @@
+{% extends "beer_pong_soldier.html" %}
+
+{% block subtitle %}
+    - Home
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script>
+        // Set german timezone.
+        moment.locale("de");
+
+        // Time till next pepe.
+        var next_pepe = null;
+
+        // Calculate and set the remaining time till midnight every 100ms.
+        function pepe_time() {
+            const tomorrow = moment().add(1, "days").set("hours", 0).set("minutes", 0).set("seconds", 0).set("milliseconds", 0);
+            next_pepe = moment.utc(moment.duration(tomorrow.diff(moment())).as("milliseconds"));
+            $("#pepe_time").text(next_pepe.format("LTS"));
+        }
+        setInterval(pepe_time, 100);
+
+        // Check every 500ms if it is 00:00:00 and reload the site to display the new pepe image.
+        function change_pepe() {
+            if (next_pepe.hours() == 0 && next_pepe.minutes() == 0 && next_pepe.seconds() == 0) {
+                clearInterval(_change_pepe);
+                setTimeout(function() {
+                    window.location.reload();
+                }, 1000);
+                setTimeout(function(){
+                    _change_pepe = setInterval(change_pepe, 500);
+                }, 3000);
+            }
+        }
+        var _change_pepe = setInterval(change_pepe, 500);
+    </script>
+{% endblock %}
+
+{% block div_content %}
+    <div>
+        <a href="https://steamcommunity.com/id/laughinraiid" target="_blank">
+            <i class="fa-brands fa-steam fa-3x icon touch-handle"></i>
+        </a>
+        <a href="https://github.com/Raaaaaid" target="_blank">
+            <i class="fa-brands fa-github fa-3x icon touch-handle"></i>
+        </a>
+        <a href="https://open.spotify.com/user/nlzixwjgvvzyr8j8hdjy4spng?si=1a87a68682df4cda" target="_blank">
+            <i class="fa-brands fa-spotify fa-3x icon touch-handle"></i>
+        </a>
+    </div>
+    <div class="vspace"></div>
+    <a href="https://www.codewars.com/users/Raaaaaid" target="_blank">
+        <img src="https://www.codewars.com/users/Raaaaaid/badges/small">
+    </a>
+    <hr class="separator">
+    <span class="heading">
+        PEPE OF THE DAY
+    </span>
+    <hr class="separator">
+    <img id="pepe" src="{{ pepe_image }}">
+    <div class="vspace"></div>
+    <div>
+        Nächster Pepe in: <span id="pepe_time"></span>
+    </div>
+{% endblock %}
