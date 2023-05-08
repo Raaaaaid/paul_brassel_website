@@ -18,15 +18,15 @@ def verify_token(token):
 
 @main.route('/')
 def index():
-    return render_template('index.html', pepe_image=PepeImage.current)
+    return render_template('index.html', pepe_image=os.environ['PEPE_IMAGE'])
 
 
 @main.route('/change_pepe/', methods=['POST'])
 @change_pepe_auth.login_required
 def change_pepe():
-    info = {'before': PepeImage.current}
+    info = {'before': os.environ['PEPE_IMAGE']}
     PepeImage.change()
-    info['after'] = PepeImage.current
+    info['after'] = os.environ['PEPE_IMAGE']
     return info
 
 

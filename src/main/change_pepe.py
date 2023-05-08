@@ -10,9 +10,8 @@ class PepeImage:
     """
 
     images = [f'static/pepe/{img}' for img in os.listdir('src/static/pepe')]
-    current = random.choice(images)  # Set an initial image.
 
     @classmethod
     def change(cls):
-        choices = [img for img in cls.images if img != cls.current]
-        cls.current = random.choice(choices)
+        choices = [img for img in cls.images if img != os.environ['PEPE_IMAGE']]
+        os.environ['PEPE_IMAGE'] = random.choice(choices)
