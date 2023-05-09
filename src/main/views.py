@@ -1,8 +1,10 @@
 
+import json
 import os
 
 from flask import render_template
 from flask_httpauth import HTTPTokenAuth
+import requests
 
 from . import main
 from .change_pepe import PepeImage
@@ -27,12 +29,37 @@ def change_pepe():
     info = {'before': os.environ['PEPE_IMAGE']}
     PepeImage.change()
     info['after'] = os.environ['PEPE_IMAGE']
+    if os.environ['FLASK_CONFIG'] == 'production':
+        update_env_vars()
     return info
 
 
 @change_pepe_auth.error_handler
 def change_pepe_auth_error(status):
     return 'Access denied!', status
+
+
+def update_env_vars():
+    """
+    Update the environment variable "PEPE_IMAGE" on render.com in case that the webservice
+    is restarted. That prevents the current value of "PEPE_IMAGE" to get lost.
+    """
+
+    url = f'https://api.render.com/v1/services/{os.environ["RENDER_SERVICE_ID"]}/env-vars'
+    headers = {
+        'accept': 'application/json',
+        'content-type': 'application/json',
+        'authorization': f'Bearer {os.environ["RENDER_API_KEY"]}',
+    }
+    response = requests.get(url, headers=headers)
+
+    payload = []
+    for d in json.loads(response.text):
+        env_var = d['envVar']
+        if env_var['key'] == 'PEPE_IMAGE':
+            env_var['value'] = os.environ['PEPE_IMAGE']
+        payload.append(env_var)
+    requests.put(url, json=payload, headers=headers)
 
 
 @main.app_errorhandler(404)
