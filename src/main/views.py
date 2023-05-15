@@ -2,7 +2,7 @@
 import json
 import os
 
-from flask import render_template
+from flask import make_response, render_template
 from flask_httpauth import HTTPTokenAuth
 import requests
 
@@ -28,10 +28,16 @@ def index():
 def change_pepe():
     info = {'before': os.environ['PEPE_IMAGE']}
     PepeImage.change()
+
     info['after'] = os.environ['PEPE_IMAGE']
     if os.environ['FLASK_CONFIG'] == 'production':
         update_env_vars()
-    return info
+
+    response = make_response(info)
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Methods'] = 'POST'
+
+    return response
 
 
 @change_pepe_auth.error_handler
